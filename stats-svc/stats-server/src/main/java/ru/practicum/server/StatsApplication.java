@@ -1,11 +1,11 @@
-package ru.practicum;
+package ru.practicum.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StatisticsApplication {
+public class StatsApplication {
     public static void main(String[] args) {
-        SpringApplication.run(StatisticsApplication.class, args);
+        SpringApplication.run(StatsApplication.class, args);
     }
 }

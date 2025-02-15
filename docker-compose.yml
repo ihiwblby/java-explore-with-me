@@ -14,7 +14,6 @@ services:
       - SPRING_DATASOURCE_PASSWORD=stats
       - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
       - TZ=Europe/Moscow
-    restart: unless-stopped
     networks:
       - backend
 
@@ -27,7 +26,6 @@ services:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=stats
-    restart: unless-stopped
     networks:
       - backend
 
@@ -45,7 +43,6 @@ services:
       - SPRING_DATASOURCE_PASSWORD=ewm
       - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
       - TZ=Europe/Moscow
-    restart: unless-stopped
     networks:
       - backend
 
@@ -58,7 +55,6 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
-    restart: unless-stopped
     networks:
       - backend
 
