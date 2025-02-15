@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
-  stats-server:
-    build: stats-service/stats-server
+  stats-svc:
+    build: stats-svc/stats-server
     container_name: stats-server-container
     ports:
       - "9090:9090"
@@ -12,39 +14,53 @@ services:
       - SPRING_DATASOURCE_PASSWORD=stats
       - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
       - TZ=Europe/Moscow
+    restart: unless-stopped
+    networks:
+      - backend
 
   stats-db:
     image: postgres:16.1
-    container_name: stats-db
+    container_name: stats-db-container
     ports:
-      - "5435:5432"
+      - "5435:5432"  # для DBeaver
     environment:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=stats
+    restart: unless-stopped
+    networks:
+      - backend
 
-  ewm-service:
-    build: main-service
-    container_name: ewm-service-container
+  ewm-svc:
+    build: main-svc
+    container_name: ewm-svc-container
     ports:
       - "8080:8080"
     depends_on:
       - ewm-db
     environment:
-      - CLIENT_URL=http://stats-server:9090
+      - CLIENT_URL=http://stats-svc:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - SPRING_DATASOURCE_USERNAME=ewm
       - SPRING_DATASOURCE_PASSWORD=ewm
       - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
       - TZ=Europe/Moscow
+    restart: unless-stopped
+    networks:
+      - backend
 
   ewm-db:
     image: postgres:16.1
-    container_name: ewn-db-container
+    container_name: ewm-db-container
     ports:
-      - "5436:5432"
+      - "5436:5432"  # для DBeaver
     environment:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
-      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  backend:
