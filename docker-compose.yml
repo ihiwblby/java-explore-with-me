@@ -1,5 +1,5 @@
 services:
-  stats-svc:
+  stats-server:
     build: stats-svc/stats-server
     container_name: stats-server-container
     ports:
