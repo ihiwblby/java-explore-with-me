@@ -1,14 +1,11 @@
 package ru.practicum.server;
 
-import org.springframework.stereotype.Service;
-
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
 public interface StatsService {
     EndpointHitDto create(EndpointHitDto endpointHitDto);
 
