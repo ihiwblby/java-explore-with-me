@@ -1,4 +1,4 @@
-package ru.practicum.server;
+package ru.practicum.server.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.server.repository.StatsRepository;
+import ru.practicum.server.mapper.StatsMapper;
+import ru.practicum.server.model.Statistics;
 
 import java.time.LocalDateTime;
 import java.util.List;

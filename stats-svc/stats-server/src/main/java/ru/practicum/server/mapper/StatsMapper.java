@@ -1,6 +1,7 @@
-package ru.practicum.server;
+package ru.practicum.server.mapper;
 
 import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.server.model.Statistics;
 
 public class StatsMapper {
     public static EndpointHitDto toEndpointHitDto(Statistics statistics) {
