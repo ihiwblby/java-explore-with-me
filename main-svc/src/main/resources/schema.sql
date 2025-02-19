@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS events (
     annotation VARCHAR(1000) NOT NULL,
     category_id BIGINT NOT NULL,
     confirmed_requests BIGINT,
-    create_date TIMESTAMP WITHOUT TIME ZONE,
+    creation_date TIMESTAMP WITHOUT TIME ZONE,
     description VARCHAR(10000),
     event_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     initiator_id BIGINT NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS requests (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     event_id BIGINT NOT NULL,
     requester_id BIGINT NOT NULL,
-    create_date TIMESTAMP WITHOUT TIME ZONE,
+    creation_date TIMESTAMP WITHOUT TIME ZONE,
     status VARCHAR(20),
     CONSTRAINT fk_requests_to_event FOREIGN KEY (event_id) REFERENCES events (id),
     CONSTRAINT fk_requests_to_user FOREIGN KEY (requester_id) REFERENCES users (id)

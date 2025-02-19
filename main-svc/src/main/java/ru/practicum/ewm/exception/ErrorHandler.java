@@ -40,4 +40,11 @@ public class ErrorHandler {
                 "Failed to convert value of type " + e.getRequiredType() + " due to: " + e.getMessage()
         );
     }
+
+    // 409
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleAccessDenied(AccessDeniedException e) {
+        return new ErrorResponse("Ошибка доступа", e.getMessage());
+    }
 }
