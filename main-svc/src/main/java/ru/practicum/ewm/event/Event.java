@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.location.model.Location;
 import ru.practicum.ewm.user.model.User;
 
@@ -35,9 +36,9 @@ public class Event {
     @Column(name = "annotation", nullable = false, length = 2000)
     String annotation;
 
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    Category category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
 
     @Column(name = "confirmed_requests")
     int confirmedRequests;
