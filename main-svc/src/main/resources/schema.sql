@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS compilations (
     title VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS compilations_to_event (
+CREATE TABLE IF NOT EXISTS compilations_of_events (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     event_id BIGINT NOT NULL,
     compilation_id BIGINT NOT NULL,

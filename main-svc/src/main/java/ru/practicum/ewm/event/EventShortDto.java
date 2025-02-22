@@ -1,7 +1,5 @@
-package ru.practicum.ewm.category.dto;
+package ru.practicum.ewm.event;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,10 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto {
+public class EventShortDto {
     Long id;
-
-    @NotBlank(message = "name cannot be null")
-    @Size(min = 1, max = 50)
-    String name;
 }

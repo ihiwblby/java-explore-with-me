@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryDto> getAll(int from, int size) {
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        Pageable pageable = PageRequest.of(from, size, Sort.by("id").ascending());
 
         Page<Category> categoryPage;
         categoryPage = categoryRepository.findAll(pageable);
