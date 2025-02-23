@@ -8,11 +8,15 @@ import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.location.mapper.LocationMapper;
 import ru.practicum.ewm.user.mapper.UserMapper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventMapper {
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public static EventShortDto toEventShortDto(Event event) {
         return EventShortDto.builder()
                 .annotation(event.getAnnotation())
@@ -45,10 +49,12 @@ public class EventMapper {
     }
 
     public static Event toEvent(NewEventDto newEventDto) {
+        LocalDateTime eventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
+
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
                 .description(newEventDto.getDescription())
-                .eventDate(newEventDto.getEventDate())
+                .eventDate(eventDate)
                 .paid(newEventDto.getPaid() != null ? newEventDto.getPaid() : false)
                 .participantLimit(newEventDto.getParticipantLimit() != null ? newEventDto.getParticipantLimit() : 0)
                 .requestModeration(newEventDto.getRequestModeration() != null ? newEventDto.getRequestModeration() : true)

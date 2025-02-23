@@ -13,8 +13,6 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.ewm.location.dto.LocationDto;
 
-import java.time.LocalDateTime;
-
 @Builder
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -32,7 +30,7 @@ public class UpdateEventRequest {
     String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    LocalDateTime eventDate;
+    String eventDate;
 
     @Valid
     LocationDto location;

@@ -50,6 +50,7 @@ import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,8 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     @Value("${server.application.name:ewm-service}")
     String applicationName;
+
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     final EventRepository eventRepository;
     final UserRepository userRepository;
@@ -166,9 +169,11 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Событие с id " + eventId + " не найдено"));
 
-        if (updateEventAdminRequest.getEventDate() != null &&
-                updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через час от текущего момента");
+        if (updateEventAdminRequest.getEventDate() != null) {
+            LocalDateTime eventDate = LocalDateTime.parse(updateEventAdminRequest.getEventDate(), formatter);
+            if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
+                throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через час от текущего момента");
+            }
         }
 
         if (!event.getState().equals(EventStatus.PENDING)) {
@@ -240,7 +245,8 @@ public class EventServiceImpl implements EventService {
         Category category = categoryRepository.findById(newEventDto.getCategory())
                 .orElseThrow(() -> new EntityNotFoundException("Категория с id " + newEventDto.getCategory() + " не найдена"));
 
-        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        LocalDateTime eventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
         }
 
@@ -278,9 +284,11 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Нельзя поменять уже опубликованное событие");
         }
 
-        if (updateEventUserRequest.getEventDate() != null
-                && updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+        if (updateEventUserRequest.getEventDate() != null) {
+            LocalDateTime eventDate = LocalDateTime.parse(updateEventUserRequest.getEventDate(), formatter);
+            if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+            }
         }
 
         boolean isUpdated = checkUpdate(event, updateEventUserRequest);
@@ -392,9 +400,12 @@ public class EventServiceImpl implements EventService {
             isUpdated = true;
         }
 
-        if (newEvent.getEventDate() != null && !newEvent.getEventDate().equals(oldEvent.getEventDate())) {
-            oldEvent.setEventDate(newEvent.getEventDate());
-            isUpdated = true;
+        if (newEvent.getEventDate() != null) {
+            LocalDateTime eventDate = LocalDateTime.parse(newEvent.getEventDate(), formatter);
+            if (!eventDate.equals(oldEvent.getEventDate())) {
+                oldEvent.setEventDate(eventDate);
+                isUpdated = true;
+            }
         }
 
         if (newEvent.getLocation() != null) {

@@ -15,8 +15,6 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.ewm.location.dto.LocationDto;
 
-import java.time.LocalDateTime;
-
 @Builder
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,9 +33,9 @@ public class NewEventDto {
     @Length(min = 20, max = 7000)
     String description;
 
-    @NotNull(message = "Event date cannot be null")
+    @NotBlank(message = "Event date cannot be blank")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    LocalDateTime eventDate;
+    String eventDate;
 
     @NotNull(message = "Location cannot be null")
     @Valid
