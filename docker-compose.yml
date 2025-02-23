@@ -24,6 +24,7 @@ services:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=stats
+      - TZ=Europe/Moscow
     networks:
       - backend
 
@@ -53,6 +54,7 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
+      - TZ=Europe/Moscow
     networks:
       - backend
 
