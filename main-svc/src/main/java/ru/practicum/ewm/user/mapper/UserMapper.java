@@ -12,7 +12,7 @@ public class UserMapper {
                 newUserRequestDto.getEmail());
     }
 
-    public static UserShortDto userShortDto(User user) {
+    public static UserShortDto toUserShortDto(User user) {
         return UserShortDto.builder()
                 .id(user.getId())
                 .name(user.getName())

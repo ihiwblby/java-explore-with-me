@@ -1,4 +1,4 @@
-package ru.practicum.ewm.compilation;
+package ru.practicum.ewm.compilation.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

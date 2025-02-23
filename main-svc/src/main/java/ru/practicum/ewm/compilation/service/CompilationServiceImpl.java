@@ -1,4 +1,4 @@
-package ru.practicum.ewm.compilation;
+package ru.practicum.ewm.compilation.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
@@ -15,10 +15,10 @@ import ru.practicum.ewm.compilation.dto.NewCompilationDto;
 import ru.practicum.ewm.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.compilation.mapper.CompilationMapper;
 import ru.practicum.ewm.compilation.model.Compilation;
-import ru.practicum.ewm.compilation.service.CompilationService;
-import ru.practicum.ewm.event.Event;
+import ru.practicum.ewm.compilation.repository.CompilationRepository;
+import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.EventRepository;
-import ru.practicum.ewm.event.EventShortDto;
+import ru.practicum.ewm.event.dto.EventShortDto;
 import ru.practicum.ewm.exception.ConflictException;
 
 import java.util.Collections;

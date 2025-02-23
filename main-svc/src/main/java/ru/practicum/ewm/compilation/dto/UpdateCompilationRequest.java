@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.ewm.event.EventShortDto;
+import ru.practicum.ewm.event.dto.EventShortDto;
 
 import java.util.Set;
 

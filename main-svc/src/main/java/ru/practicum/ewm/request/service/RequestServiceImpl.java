@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.event.Event;
+import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.EventRepository;
-import ru.practicum.ewm.event.EventStatus;
+import ru.practicum.ewm.event.model.EventStatus;
 import ru.practicum.ewm.exception.AccessDeniedException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.request.dto.ParticipationRequestDto;
@@ -21,6 +21,7 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,8 +57,8 @@ public class RequestServiceImpl implements RequestService {
         verifyRequest(event, userId, eventId);
 
         Request request = new Request();
-        if (!event.isRequestModeration()) {
-            request.setStatus(RequestStatus.APPROVED);
+        if (event.getRequestModeration().equals(Boolean.FALSE)) {
+            request.setStatus(RequestStatus.CONFIRMED);
         } else {
             request.setStatus(RequestStatus.PENDING);
         }
@@ -104,11 +105,11 @@ public class RequestServiceImpl implements RequestService {
             throw new AccessDeniedException("Инициатор события не может добавить запрос на участие в своём событии");
         }
 
-        if (!event.getEventStatus().equals(EventStatus.PUBLISHED)) {
+        if (!event.getState().equals(EventStatus.PUBLISHED)) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
 
-        if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+        if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())) {
             throw new ConflictException("У события достигнут лимит запросов на участие");
         }
     }

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestControllerAdvice
-public class ErrorHandler {
+@RestControllerAdvice("ru.practicum.ewm.exception")
+public class EwmErrorHandler {
 
     // 404
     @ExceptionHandler

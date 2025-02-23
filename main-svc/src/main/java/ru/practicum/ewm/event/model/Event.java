@@ -1,4 +1,4 @@
-package ru.practicum.ewm.event;
+package ru.practicum.ewm.event.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import ru.practicum.ewm.user.model.User;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Data
 @Entity
 @NoArgsConstructor
@@ -41,10 +43,10 @@ public class Event {
     Category category;
 
     @Column(name = "confirmed_requests")
-    int confirmedRequests;
+    Integer confirmedRequests;
 
     @Column(name = "creation_date")
-    LocalDateTime creationDate;
+    LocalDateTime createdOn;
 
     @Column(name = "description", length = 7000)
     String description;
@@ -61,20 +63,20 @@ public class Event {
     Location location;
 
     @Column(name = "paid")
-    boolean paid;
+    Boolean paid;
 
     @Column(name = "participant_limit")
-    int participantLimit;
+    Integer participantLimit;
 
     @Column(name = "published_date")
-    LocalDateTime publishedDate;
+    LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
-    boolean requestModeration;
+    Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    EventStatus eventStatus;
+    EventStatus state;
 
     @Column(name = "title", nullable = false, length = 120)
     String title;
