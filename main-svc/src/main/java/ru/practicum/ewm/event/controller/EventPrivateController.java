@@ -60,8 +60,6 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto newEventDto) {
-
-        System.out.println("EventPrivateController post /users/{userId} " + userId + " /events");
         return eventService.create(userId, newEventDto);
     }
 
@@ -69,7 +67,6 @@ public class EventPrivateController {
     public EventFullDto update(@PathVariable Long userId,
                                @PathVariable Long eventId,
                                @RequestBody @Valid UpdateEventUserRequest updateEventUserRequest) {
-        System.out.println("EventPrivateController patch /users/{userId} " + userId + " /events/{eventId} " + eventId);
         return eventService.update(userId, eventId, updateEventUserRequest);
     }
 
@@ -77,7 +74,6 @@ public class EventPrivateController {
     public Map<String, List<ParticipationRequestDto>> approveRequests(@PathVariable Long userId,
                                                                       @PathVariable Long eventId,
                                                                       @RequestBody @Valid EventRequestStatusUpdateRequest requestUpdateDto) {
-        System.out.println("EventPrivateController patch /users/{userId} " + userId + " /events/{eventId} " + eventId + " /requests");
         return eventService.approveRequests(userId, eventId, requestUpdateDto);
     }
 }

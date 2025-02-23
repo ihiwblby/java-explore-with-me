@@ -17,14 +17,12 @@ import ru.practicum.ewm.compilation.mapper.CompilationMapper;
 import ru.practicum.ewm.compilation.model.Compilation;
 import ru.practicum.ewm.compilation.repository.CompilationRepository;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.EventRepository;
-import ru.practicum.ewm.event.dto.EventShortDto;
+import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,14 +63,11 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         Compilation compilationToCreate = CompilationMapper.toCompilation(newCompilationDto);
-        compilationToCreate.setPinned(Boolean.TRUE.equals(newCompilationDto.getPinned()));
 
-        Set<EventShortDto> eventDtos = Optional.ofNullable(newCompilationDto.getEvents()).orElse(Collections.emptySet());
-        Set<Long> eventIds = eventDtos.stream()
-                .map(EventShortDto::getId)
-                .collect(Collectors.toSet());
-
-        Set<Event> events = eventIds.isEmpty() ? Collections.emptySet() : new HashSet<>(eventRepository.findAllById(eventIds));
+        Set<Long> eventIds = newCompilationDto.getEvents();
+        Set<Event> events = eventIds != null && !eventIds.isEmpty()
+                ? new HashSet<>(eventRepository.findAllById(eventIds))
+                : Collections.emptySet();
 
         compilationToCreate.setEvents(events);
         Compilation newCompilation = compilationRepository.save(compilationToCreate);
@@ -102,11 +97,7 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         if (updateComp.getEvents() != null && !updateComp.getEvents().isEmpty()) {
-            Set<Long> eventIds = updateComp.getEvents().stream()
-                    .map(EventShortDto::getId)
-                    .collect(Collectors.toSet());
-
-            Set<Event> events = new HashSet<>(eventRepository.findAllById(eventIds));
+            Set<Event> events = new HashSet<>(eventRepository.findAllById(updateComp.getEvents()));
             compilation.setEvents(events);
         }
 

@@ -9,7 +9,10 @@ import java.util.stream.Collectors;
 
 public class CompilationMapper {
     public static Compilation toCompilation(NewCompilationDto newCompilationDto) {
-        return new Compilation(null, null, newCompilationDto.getTitle(), null);
+        return Compilation.builder()
+                .pinned(newCompilationDto.getPinned() != null ? newCompilationDto.getPinned() : false)
+                .title(newCompilationDto.getTitle())
+                .build();
     }
 
     public static CompilationDto toCompilationDto(Compilation compilation) {

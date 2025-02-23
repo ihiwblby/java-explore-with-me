@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.EventRepository;
+import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.event.model.EventStatus;
 import ru.practicum.ewm.exception.AccessDeniedException;
 import ru.practicum.ewm.exception.ConflictException;

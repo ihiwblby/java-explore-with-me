@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.ewm.event.dto.EventShortDto;
 
 import java.util.Set;
 
@@ -17,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateCompilationRequest {
-    Set<EventShortDto> events;
+    Set<Long> events;
 
     Boolean pinned;
 

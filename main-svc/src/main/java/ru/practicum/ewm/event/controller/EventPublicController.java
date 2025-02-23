@@ -42,7 +42,6 @@ public class EventPublicController {
                                       @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                       @RequestParam(defaultValue = "10") @Positive int size,
                                       HttpServletRequest request) {
-        System.out.println("EventPublicController get /events");
 
         LocalDateTime start = (rangeStart != null)
                 ? LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
@@ -64,16 +63,13 @@ public class EventPublicController {
                 .from(from)
                 .size(size)
                 .build();
-        if (sort != null) {
-            eventParams.setSort(sort);
-        }
+        eventParams.setSort(Objects.requireNonNullElse(sort, "id"));
         return eventService.publicGetAll(eventParams, request);
     }
 
     @GetMapping("/{id}")
     public EventFullDto getById(@PathVariable @Positive Long id,
                                 HttpServletRequest request) {
-        System.out.println("EventPublicController get /events/{id}" + id);
         return eventService.publicGetById(id, request);
     }
 }

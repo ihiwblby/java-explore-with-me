@@ -1,13 +1,12 @@
-package ru.practicum.ewm.event;
+package ru.practicum.ewm.event.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +20,7 @@ import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
+import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.event.dto.EventShortDto;
@@ -35,7 +35,6 @@ import ru.practicum.ewm.event.model.EventAdminState;
 import ru.practicum.ewm.event.model.EventPublicParams;
 import ru.practicum.ewm.event.model.EventStatus;
 import ru.practicum.ewm.event.model.EventUserState;
-import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.AccessDeniedException;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.ValidationException;
@@ -63,17 +62,18 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventServiceImpl implements EventService {
-    EventRepository eventRepository;
-    UserRepository userRepository;
-    RequestRepository requestRepository;
-    CategoryRepository categoryRepository;
-    LocationRepository locationRepository;
-    StatsClient statsClient;
-    Environment environment;
-    ObjectMapper objectMapper;
+    @Value("${server.application.name:ewm-service}")
+    String applicationName;
 
+    final EventRepository eventRepository;
+    final UserRepository userRepository;
+    final RequestRepository requestRepository;
+    final CategoryRepository categoryRepository;
+    final LocationRepository locationRepository;
+    final StatsClient statsClient;
+    final ObjectMapper objectMapper;
 
     @Override
     public List<EventShortDto> publicGetAll(EventPublicParams eventParams, HttpServletRequest request) {
@@ -496,25 +496,34 @@ public class EventServiceImpl implements EventService {
                 .map(event -> "/events/" + event.getId())
                 .toList();
 
-        LocalDateTime earliestDate = events.stream()
+        LocalDateTime startDate = events.stream()
                 .map(Event::getCreatedOn)
                 .min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.now());
+                .orElseThrow(() -> new IllegalStateException("Не удалось определить дату самого раннего события"));
 
         ResponseEntity<Object> response = statsClient.get(
-                earliestDate.toString(),
+                startDate.toString(),
                 LocalDateTime.now().toString(),
                 uris,
                 true
         );
 
-        List<ViewStatsDto> viewStatsDtoList = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
-        });
+        Object responseBody = response.getBody();
 
-        return viewStatsDtoList.stream()
-                .filter(statsDto -> statsDto.getUri().startsWith("/events/"))
+        if (!(responseBody instanceof List<?> rawList)) {
+            System.err.println("Unexpected response format: " + responseBody);
+            return Map.of();
+        }
+
+        List<ViewStatsDto> viewStatsDto = rawList.stream()
+                .filter(Map.class::isInstance)
+                .map(map -> objectMapper.convertValue(map, ViewStatsDto.class))
+                .filter(stats -> stats.getUri().startsWith("/events/"))
+                .toList();
+
+        return viewStatsDto.stream()
                 .collect(Collectors.toMap(
-                        statsDto -> Long.parseLong(statsDto.getUri().substring("/events/".length())),
+                        stats -> Long.parseLong(stats.getUri().substring("/events/".length())),
                         ViewStatsDto::getHits
                 ));
     }
@@ -535,8 +544,6 @@ public class EventServiceImpl implements EventService {
     }
 
     private void saveStatHit(HttpServletRequest request) {
-        final String applicationName = environment.getProperty("server.application.name", "ewm-service");
-
         statsClient.create(EndpointHitDto.builder()
                 .app(applicationName)
                 .uri(request.getRequestURI())
@@ -582,13 +589,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private Pageable getPageable(EventPublicParams eventParams) {
-        Sort sort = Sort.unsorted();
-        if ("eventDate".equalsIgnoreCase(eventParams.getSort())) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+
+        if (eventParams.getSort().equals("EVENT_DATE")) {
             sort = Sort.by(Sort.Direction.ASC, "eventDate");
-        } else if ("views".equalsIgnoreCase(eventParams.getSort())) {
+        } else if (eventParams.getSort().equals("VIEWS")) {
             sort = Sort.by(Sort.Direction.DESC, "views");
         }
 
-        return PageRequest.of(eventParams.getFrom() / eventParams.getSize(), eventParams.getSize(), sort);
+        return PageRequest.of(eventParams.getFrom(), eventParams.getSize(), sort);
     }
 }
