@@ -38,18 +38,21 @@ public class EventPrivateController {
     public List<EventShortDto> getAll(@PathVariable Long userId,
                                       @RequestParam(defaultValue = "0") Integer from,
                                       @RequestParam(defaultValue = "10") Integer size) {
+        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events");
         return eventService.privateGetAllByUserId(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getById(@PathVariable Long userId,
                                 @PathVariable Long eventId) {
+        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events/{eventId} " + eventId);
         return eventService.privateGetByUserIdAndEventId(userId, eventId);
     }
 
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getAllRequest(@PathVariable Long userId,
                                                        @PathVariable Long eventId) {
+        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events/{eventId} " + eventId + " /requests");
         return eventService.privateGetAllParticipationRequests(userId, eventId);
     }
 
@@ -58,6 +61,7 @@ public class EventPrivateController {
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto newEventDto) {
 
+        System.out.println("EventPrivateController post /users/{userId} " + userId + " /events");
         return eventService.create(userId, newEventDto);
     }
 
@@ -65,6 +69,7 @@ public class EventPrivateController {
     public EventFullDto update(@PathVariable Long userId,
                                @PathVariable Long eventId,
                                @RequestBody @Valid UpdateEventUserRequest updateEventUserRequest) {
+        System.out.println("EventPrivateController patch /users/{userId} " + userId + " /events/{eventId} " + eventId);
         return eventService.update(userId, eventId, updateEventUserRequest);
     }
 
@@ -72,6 +77,7 @@ public class EventPrivateController {
     public Map<String, List<ParticipationRequestDto>> approveRequests(@PathVariable Long userId,
                                                                       @PathVariable Long eventId,
                                                                       @RequestBody @Valid EventRequestStatusUpdateRequest requestUpdateDto) {
+        System.out.println("EventPrivateController patch /users/{userId} " + userId + " /events/{eventId} " + eventId + " /requests");
         return eventService.approveRequests(userId, eventId, requestUpdateDto);
     }
 }

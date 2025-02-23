@@ -34,12 +34,14 @@ public class EventAdminController {
 
     @GetMapping
     public List<EventFullDto> getAll(@RequestParam(required = false) List<Long> users,
-                                      @RequestParam(required = false) List<String> states,
-                                      @RequestParam(required = false) List<Long> categories,
-                                      @RequestParam(required = false) String rangeStart,
-                                      @RequestParam(required = false) String rangeEnd,
-                                      @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                      @RequestParam(defaultValue = "10") @Positive int size) {
+                                     @RequestParam(required = false) List<String> states,
+                                     @RequestParam(required = false) List<Long> categories,
+                                     @RequestParam(required = false) String rangeStart,
+                                     @RequestParam(required = false) String rangeEnd,
+                                     @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                     @RequestParam(defaultValue = "10") @Positive int size) {
+
+        System.out.println("EventAdminController get /admin/events");
 
         LocalDateTime start = (rangeStart != null)
                 ? LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
@@ -64,7 +66,8 @@ public class EventAdminController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateById(@PathVariable @Positive Long eventId,
-                                @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
+                                   @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
+        System.out.println("EventAdminController patch /admin/events/{eventId} + " + eventId);
         return eventService.adminUpdateById(eventId, updateEventAdminRequest);
     }
 }

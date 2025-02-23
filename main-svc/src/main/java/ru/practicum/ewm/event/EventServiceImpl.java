@@ -38,6 +38,7 @@ import ru.practicum.ewm.event.model.EventUserState;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.AccessDeniedException;
 import ru.practicum.ewm.exception.ConflictException;
+import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.location.mapper.LocationMapper;
 import ru.practicum.ewm.location.model.Location;
 import ru.practicum.ewm.location.repository.LocationRepository;
@@ -54,6 +55,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,7 +78,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> publicGetAll(EventPublicParams eventParams, HttpServletRequest request) {
         if (eventParams.getRangeStart() != null && eventParams.getRangeEnd() != null && eventParams.getRangeEnd().isBefore(eventParams.getRangeStart())) {
-            throw new ConflictException("Дата окончания не может быть раньше даты начала");
+            throw new ValidationException("Дата окончания не может быть раньше даты начала");
         }
 
         saveStatHit(request);
@@ -116,7 +118,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Событие с id " + eventId + " не найдено"));
 
         if (!EventStatus.PUBLISHED.equals(event.getState())) {
-            throw new AccessDeniedException("Событие не опубликовано");
+            throw new EntityNotFoundException("Событие не опубликовано");
         }
 
         saveStatHit(request);
@@ -166,7 +168,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventAdminRequest.getEventDate() != null &&
                 updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем через час от текущего момента");
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через час от текущего момента");
         }
 
         if (!event.getState().equals(EventStatus.PENDING)) {
@@ -239,7 +241,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Категория с id " + newEventDto.getCategory() + " не найдена"));
 
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
         }
 
         Event newEvent = EventMapper.toEvent(newEventDto);
@@ -278,7 +280,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventUserRequest.getEventDate() != null
                 && updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
         }
 
         boolean isUpdated = checkUpdate(event, updateEventUserRequest);
@@ -308,8 +310,8 @@ public class EventServiceImpl implements EventService {
 
         if (event.getRequestModeration().equals(Boolean.TRUE)
                 && event.getParticipantLimit() > 0
-                && event.getConfirmedRequests().equals(event.getParticipantLimit())
-                && statusUpdateRequest.getStatus().equals(RequestStatus.CONFIRMED)) {
+                && (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())
+                && statusUpdateRequest.getStatus().equals(RequestStatus.CONFIRMED))) {
             throw new ConflictException("Лимит заявок на участие в событии исчерпан");
         }
 
@@ -464,7 +466,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventAdminParams.getStates() != null && !eventAdminParams.getStates().isEmpty()) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    root.get("eventStatus").as(String.class).in(eventAdminParams.getStates()));
+                    root.get("state").as(String.class).in(eventAdminParams.getStates()));
         }
 
         if (eventAdminParams.getCategories() != null && !eventAdminParams.getCategories().isEmpty()) {
@@ -545,7 +547,7 @@ public class EventServiceImpl implements EventService {
 
     private Specification<Event> buildSpecification(EventPublicParams eventParams) {
         Specification<Event> specification = Specification.where((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("eventStatus"), EventStatus.PUBLISHED));
+                criteriaBuilder.equal(root.get("state"), EventStatus.PUBLISHED));
 
         if (eventParams.getText() != null) {
             String searchText = "%" + eventParams.getText().toLowerCase() + "%";

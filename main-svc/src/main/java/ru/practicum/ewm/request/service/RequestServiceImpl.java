@@ -21,7 +21,6 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,11 +56,12 @@ public class RequestServiceImpl implements RequestService {
         verifyRequest(event, userId, eventId);
 
         Request request = new Request();
-        if (event.getRequestModeration().equals(Boolean.FALSE)) {
-            request.setStatus(RequestStatus.CONFIRMED);
-        } else {
-            request.setStatus(RequestStatus.PENDING);
-        }
+        request.setStatus((event.getRequestModeration().equals(Boolean.FALSE)
+                || event.getParticipantLimit() == null
+                || event.getParticipantLimit() == 0)
+                ? RequestStatus.CONFIRMED
+                : RequestStatus.PENDING);
+
         request.setEvent(event);
         request.setRequester(user);
         request.setCreated(LocalDateTime.now());
@@ -80,7 +80,7 @@ public class RequestServiceImpl implements RequestService {
 
         RequestStatus requestStatus = request.getStatus();
 
-        if (requestStatus.equals(RequestStatus.CANCELLED) || requestStatus.equals(RequestStatus.REJECTED)) {
+        if (requestStatus.equals(RequestStatus.CANCELED) || requestStatus.equals(RequestStatus.REJECTED)) {
             throw new ConflictException("Заявка с id " + requestId + " уже отменена");
         }
 
@@ -90,7 +90,7 @@ public class RequestServiceImpl implements RequestService {
             throw new AccessDeniedException("Инициатор события может отменить событие только на этапе ожидания публикации");
         }
 
-        request.setStatus(RequestStatus.CANCELLED);
+        request.setStatus(RequestStatus.CANCELED);
         return RequestMapper.toParticipationRequestDto(request);
     }
 
@@ -109,8 +109,9 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
 
-        if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())) {
-            throw new ConflictException("У события достигнут лимит запросов на участие");
+        if (event.getParticipantLimit() > 0
+                && event.getParticipantLimit() <= requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)) {
+            throw new ConflictException("Превышен лимит участников события");
         }
     }
 }

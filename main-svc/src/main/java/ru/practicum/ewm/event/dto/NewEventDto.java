@@ -43,7 +43,6 @@ public class NewEventDto {
     @Valid
     LocationDto location;
 
-    @NotNull(message = "Paid field cannot be null")
     Boolean paid;
 
     @PositiveOrZero

@@ -20,6 +20,7 @@ import ru.practicum.ewm.event.model.EventPublicParams;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class EventPublicController {
                                       @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                       @RequestParam(defaultValue = "10") @Positive int size,
                                       HttpServletRequest request) {
+        System.out.println("EventPublicController get /events");
 
         LocalDateTime start = (rangeStart != null)
                 ? LocalDateTime.parse(rangeStart, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
@@ -50,7 +52,7 @@ public class EventPublicController {
                 ? LocalDateTime.parse(rangeEnd, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
                 : LocalDateTime.now().plusYears(1);
 
-        String normalizedText = text.toLowerCase().trim();
+        String normalizedText = Objects.requireNonNullElse(text, "").trim().toLowerCase();
 
         EventPublicParams eventParams = EventPublicParams.builder()
                 .text(normalizedText)
@@ -62,7 +64,7 @@ public class EventPublicController {
                 .from(from)
                 .size(size)
                 .build();
-        if (!sort.trim().isBlank()) {
+        if (sort != null) {
             eventParams.setSort(sort);
         }
         return eventService.publicGetAll(eventParams, request);
@@ -71,6 +73,7 @@ public class EventPublicController {
     @GetMapping("/{id}")
     public EventFullDto getById(@PathVariable @Positive Long id,
                                 HttpServletRequest request) {
+        System.out.println("EventPublicController get /events/{id}" + id);
         return eventService.publicGetById(id, request);
     }
 }

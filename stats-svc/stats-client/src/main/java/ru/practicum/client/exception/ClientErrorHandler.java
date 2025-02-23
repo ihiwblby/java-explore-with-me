@@ -11,7 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.util.stream.Collectors;
 
-@RestControllerAdvice("ru.practicum.client.exception")
+@RestControllerAdvice
 public class ClientErrorHandler {
 
     // ошибки @Valid для @RequestBody

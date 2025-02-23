@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestControllerAdvice("ru.practicum.ewm.exception")
+@RestControllerAdvice
 public class EwmErrorHandler {
 
     // 404
@@ -46,5 +46,12 @@ public class EwmErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleAccessDenied(AccessDeniedException e) {
         return new ErrorResponse("Ошибка доступа", e.getMessage());
+    }
+
+    // 400
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(ValidationException e) {
+        return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
 }
