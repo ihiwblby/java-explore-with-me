@@ -27,4 +27,10 @@ public class ErrorHandler {
     public ErrorResponse handleException(final Exception e) {
         return new ErrorResponse("Произошла внутренняя ошибка сервера", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(ValidationException e) {
+        return new ErrorResponse("Ошибка валидации", e.getMessage());
+    }
 }
