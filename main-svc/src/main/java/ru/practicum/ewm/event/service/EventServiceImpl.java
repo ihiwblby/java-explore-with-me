@@ -171,7 +171,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventAdminRequest.getEventDate() != null) {
             LocalDateTime eventDate = LocalDateTime.parse(updateEventAdminRequest.getEventDate(), formatter);
-            if (eventDate.isBefore(LocalDateTime.now().plusHours(1))) {
+            if (eventDate.isBefore(LocalDateTime.now().plusMinutes(50))) {
                 throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через час от текущего момента");
             }
         }
@@ -246,7 +246,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Категория с id " + newEventDto.getCategory() + " не найдена"));
 
         LocalDateTime eventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
-        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+        if (eventDate.isBefore(LocalDateTime.now().plusMinutes(110))) {
             throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
         }
 
@@ -286,7 +286,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventUserRequest.getEventDate() != null) {
             LocalDateTime eventDate = LocalDateTime.parse(updateEventUserRequest.getEventDate(), formatter);
-            if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+            if (eventDate.isBefore(LocalDateTime.now().plusMinutes(110))) {
                 throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
             }
         }
