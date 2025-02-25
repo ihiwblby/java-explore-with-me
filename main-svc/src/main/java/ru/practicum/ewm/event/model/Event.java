@@ -14,8 +14,9 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.location.model.Location;
@@ -24,8 +25,9 @@ import ru.practicum.ewm.user.model.User;
 import java.time.LocalDateTime;
 
 @Builder
-@Data
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "events")

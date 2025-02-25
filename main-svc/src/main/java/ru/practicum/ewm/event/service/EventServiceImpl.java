@@ -51,6 +51,7 @@ import ru.practicum.ewm.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -335,9 +336,10 @@ public class EventServiceImpl implements EventService {
                 throw new ConflictException("Нельзя отменить подтвержденные заявки");
             }
 
+            requests.forEach(request -> request.setStatus(RequestStatus.REJECTED));
+            requestRepository.saveAll(requests);
+
             List<ParticipationRequestDto> rejectedRequests = requests.stream()
-                    .peek(request -> request.setStatus(RequestStatus.REJECTED))
-                    .map(requestRepository::save)
                     .map(RequestMapper::toParticipationRequestDto)
                     .toList();
             requestMap.put("rejectedRequests", rejectedRequests);
@@ -350,22 +352,25 @@ public class EventServiceImpl implements EventService {
             int confirmedRequests = event.getConfirmedRequests() != null ? event.getConfirmedRequests() : 0;
             int availableSlots = event.getParticipantLimit() - confirmedRequests;
 
-            List<Request> confirmedList = requests.stream()
-                    .limit(availableSlots)
-                    .peek(request -> request.setStatus(RequestStatus.CONFIRMED))
-                    .map(requestRepository::save)
-                    .toList();
+            List<Request> confirmedList = new ArrayList<>();
+            List<Request> rejectedList = new ArrayList<>();
+
+            for (int i = 0; i < requests.size(); i++) {
+                if (i < availableSlots) {
+                    requests.get(i).setStatus(RequestStatus.CONFIRMED);
+                    confirmedList.add(requests.get(i));
+                } else {
+                    requests.get(i).setStatus(RequestStatus.REJECTED);
+                    rejectedList.add(requests.get(i));
+                }
+            }
+
+            requestRepository.saveAll(requests);
 
             List<ParticipationRequestDto> confirmedRequestsDto = confirmedList.stream()
                     .map(RequestMapper::toParticipationRequestDto)
                     .toList();
             requestMap.put("confirmedRequests", confirmedRequestsDto);
-
-            List<Request> rejectedList = requests.stream()
-                    .skip(availableSlots)
-                    .peek(request -> request.setStatus(RequestStatus.REJECTED))
-                    .map(requestRepository::save)
-                    .toList();
 
             List<ParticipationRequestDto> rejectedRequestsDto = rejectedList.stream()
                     .map(RequestMapper::toParticipationRequestDto)
