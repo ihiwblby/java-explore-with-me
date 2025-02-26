@@ -1,4 +1,4 @@
-package ru.practicum.server;
+package ru.practicum.server.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.server.exception.ValidationException;
+import ru.practicum.server.repository.StatsRepository;
+import ru.practicum.server.mapper.StatsMapper;
+import ru.practicum.server.model.Statistics;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +33,7 @@ public class StatsServiceImpl implements StatsService {
     @Transactional
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         if (start.isAfter(end)) {
-            throw new IllegalArgumentException("start cannot be after end");
+            throw new ValidationException("start cannot be after end");
         }
 
         if (uris == null || uris.isEmpty()) {

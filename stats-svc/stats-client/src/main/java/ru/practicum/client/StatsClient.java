@@ -15,10 +15,10 @@ import java.util.Map;
 @Service
 public class StatsClient extends BaseClient {
     @Autowired
-    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public StatsClient(@Value("${client.url}") String serviceUrl, RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serviceUrl + ""))
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
@@ -29,12 +29,16 @@ public class StatsClient extends BaseClient {
     }
 
     public ResponseEntity<Object> get(String start, String end, List<String> uris, Boolean unique) {
-        Map<String, Object> params = Map.of(
+        StringBuilder urisString = new StringBuilder();
+
+        for (String uri : uris) {
+            urisString.append("&uris=").append(uri);
+        }
+        Map<String, Object> parameters = Map.of(
                 "start", start,
                 "end", end,
-                "uris", uris,
                 "unique", unique
         );
-        return get("/stats?start={start}&end={end}&uris=uris&unique={unique}", null, params);
+        return get("/stats?start={start}&end={end}" + urisString + "&unique={unique}",null,parameters);
     }
 }

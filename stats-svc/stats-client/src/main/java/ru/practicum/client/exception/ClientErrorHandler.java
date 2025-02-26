@@ -12,7 +12,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class ErrorHandler {
+public class ClientErrorHandler {
 
     // ошибки @Valid для @RequestBody
     @ExceptionHandler
