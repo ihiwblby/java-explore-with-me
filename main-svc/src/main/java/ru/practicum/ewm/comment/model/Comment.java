@@ -51,6 +51,6 @@ public class Comment {
     @Column(nullable = false)
     LocalDateTime updated;
 
-    @Column(nullable = false)
+    @Column(name = "is_hidden", nullable = false)
     Boolean isHidden;
 }

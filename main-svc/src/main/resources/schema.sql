@@ -69,5 +69,5 @@ CREATE TABLE IF NOT EXISTS comments (
     event_id BIGINT NOT NULL REFERENCES events (id),
     created TIMESTAMP WITHOUT TIME ZONE,
     updated TIMESTAMP WITHOUT TIME ZONE,
-    isHidden BOOLEAN NOT NULL
+    is_hidden BOOLEAN NOT NULL
 );

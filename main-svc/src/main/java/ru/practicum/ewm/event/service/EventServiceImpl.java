@@ -20,6 +20,10 @@ import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
+import ru.practicum.ewm.comment.dto.CommentDto;
+import ru.practicum.ewm.comment.mapper.CommentMapper;
+import ru.practicum.ewm.comment.model.Comment;
+import ru.practicum.ewm.comment.repository.CommentRepository;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.EventRequestStatusUpdateRequest;
@@ -78,6 +82,7 @@ public class EventServiceImpl implements EventService {
     final LocationRepository locationRepository;
     final StatsClient statsClient;
     final ObjectMapper objectMapper;
+    final CommentRepository commentRepository;
 
     @Override
     public List<EventShortDto> publicGetAll(EventPublicParams eventParams, HttpServletRequest request) {
@@ -97,7 +102,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requests = requestRepository.findAllByEventIdInAndStatus(events
                 .stream()
                 .map(Event::getId)
-                .collect(Collectors.toList()), RequestStatus.CONFIRMED);
+                .toList(), RequestStatus.CONFIRMED);
 
         Map<Long, List<Request>> confirmedRequestsCountMap = requests.stream()
                 .collect(Collectors.groupingBy(r -> r.getEvent().getId()));
@@ -129,10 +134,16 @@ public class EventServiceImpl implements EventService {
 
         long views = getEventViews(List.of(event)).getOrDefault(event.getId(), 1L);
         Map<Long, List<Request>> confirmedRequests = getConfirmedRequestsCount(List.of(event));
+        Page<Comment> comments = commentRepository.findVisibleCommentsByEvent(event.getId(),
+                PageRequest.of(0, 10));
+        List<CommentDto> commentDtos = comments.stream()
+                .map(CommentMapper::toCommentDto)
+                .toList();
 
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         eventFullDto.setViews(views);
         eventFullDto.setConfirmedRequests(confirmedRequests.getOrDefault(event.getId(), List.of()).size());
+        eventFullDto.setComments(commentDtos);
 
         return eventFullDto;
     }
@@ -149,10 +160,10 @@ public class EventServiceImpl implements EventService {
 
         List<EventFullDto> result = events.getContent().stream()
                 .map(EventMapper::toEventFullDto)
-                .collect(Collectors.toList());
+                .toList();
 
         List<Request> requests = requestRepository.findAllByEventIdInAndStatus(events
-                .stream().map(Event::getId).collect(Collectors.toList()), RequestStatus.CONFIRMED);
+                .stream().map(Event::getId).toList(), RequestStatus.CONFIRMED);
 
         Map<Long, List<Request>> confirmedRequestsCountMap = requests.stream()
                 .collect(Collectors.groupingBy(r -> r.getEvent().getId()));
@@ -200,7 +211,7 @@ public class EventServiceImpl implements EventService {
 
         return eventsPage.stream()
                 .map(EventMapper::toEventShortDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -216,7 +227,16 @@ public class EventServiceImpl implements EventService {
             throw new AccessDeniedException("Пользователь не является инициатором события");
         }
 
-        return EventMapper.toEventFullDto(event);
+        Page<Comment> comments = commentRepository.findVisibleCommentsByEvent(event.getId(),
+                PageRequest.of(0, 10));
+        List<CommentDto> commentDtos = comments.stream()
+                .map(CommentMapper::toCommentDto)
+                .toList();
+
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        eventFullDto.setComments(commentDtos);
+
+        return eventFullDto;
     }
 
     @Override
@@ -235,7 +255,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requests = requestRepository.findAllByEventId(eventId);
         return requests.stream()
                 .map(RequestMapper::toParticipationRequestDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -551,7 +571,7 @@ public class EventServiceImpl implements EventService {
 
         List<Long> eventIds = events.stream()
                 .map(Event::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         List<Request> requests = requestRepository.findAllByEventIdInAndStatus(eventIds, RequestStatus.CONFIRMED);
 
