@@ -1,4 +1,4 @@
-package ru.practicum.ewm.comment;
+package ru.practicum.ewm.comment.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
@@ -10,12 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.comment.dto.CommentDto;
-import ru.practicum.ewm.comment.dto.CommentUpdateDto;
 import ru.practicum.ewm.comment.dto.NewCommentDto;
 import ru.practicum.ewm.comment.mapper.CommentMapper;
 import ru.practicum.ewm.comment.model.Comment;
 import ru.practicum.ewm.comment.repository.CommentRepository;
-import ru.practicum.ewm.comment.service.CommentService;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
@@ -33,6 +31,15 @@ public class CommentServiceImpl implements CommentService {
     CommentRepository commentRepository;
     UserRepository userRepository;
     EventRepository eventRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommentDto get(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("Комментарий с id " + commentId + " не найден"));
+
+        return CommentMapper.toCommentDto(comment);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -97,10 +104,6 @@ public class CommentServiceImpl implements CommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Событие с id " + eventId + " не найдено"));
 
-        if (!newCommentDto.getAuthorName().equals(user.getName())) {
-            throw new ConflictException("Пользователь не является автором этого комментария");
-        }
-
         Comment newComment = CommentMapper.toComment(newCommentDto);
         newComment.setAuthor(user);
         newComment.setEvent(event);
@@ -128,14 +131,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto update(Long userId, Long commentId, CommentUpdateDto commentUpdateDto) {
+    public CommentDto update(Long userId, Long commentId, NewCommentDto newCommentDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с id " + userId + " не найден"));
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Комментарий с id " + commentId + " не найден"));
 
-        String textToUpdate = commentUpdateDto.getText().trim();
+        String textToUpdate = newCommentDto.getText().trim();
         if (comment.getText().equals(textToUpdate)) {
             throw new ConflictException("Отсутствует новый текст");
         }

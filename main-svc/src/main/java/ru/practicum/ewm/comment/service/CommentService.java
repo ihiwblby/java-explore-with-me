@@ -1,7 +1,6 @@
 package ru.practicum.ewm.comment.service;
 
 import ru.practicum.ewm.comment.dto.CommentDto;
-import ru.practicum.ewm.comment.dto.CommentUpdateDto;
 import ru.practicum.ewm.comment.dto.NewCommentDto;
 
 import java.util.List;
@@ -19,9 +18,11 @@ public interface CommentService {
 
     void privateDelete(Long userId, Long commentId);
 
-    CommentDto update(Long userId, Long commentId, CommentUpdateDto commentUpdateDto);
+    CommentDto update(Long userId, Long commentId, NewCommentDto newCommentDto);
 
     void adminDelete(Long commentId);
 
     CommentDto changeVisibility(Long commentId, Boolean isHidden);
+
+    CommentDto get(Long commentId);
 }

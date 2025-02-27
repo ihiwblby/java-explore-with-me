@@ -28,6 +28,11 @@ import java.util.List;
 public class CommentAdminController {
     CommentService commentService;
 
+    @GetMapping("/{commentId}")
+    public CommentDto get(@PathVariable @Positive Long commentId) {
+        return commentService.get(commentId);
+    }
+
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Positive Long commentId) {
@@ -40,7 +45,7 @@ public class CommentAdminController {
         return commentService.changeVisibility(commentId, isHidden);
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("/event/{eventId}")
     public List<CommentDto> adminGetAll(@PathVariable @Positive Long eventId,
                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                         @RequestParam(defaultValue = "10") @Positive int size) {

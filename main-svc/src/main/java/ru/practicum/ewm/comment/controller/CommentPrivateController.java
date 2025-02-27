@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.comment.service.CommentService;
 import ru.practicum.ewm.comment.dto.CommentDto;
-import ru.practicum.ewm.comment.dto.CommentUpdateDto;
 import ru.practicum.ewm.comment.dto.NewCommentDto;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class CommentPrivateController {
 
     @GetMapping("/{eventId}")
     public List<CommentDto> getAllByUserAndEvent(@PathVariable @Positive Long userId,
-                                         @PathVariable @Positive Long eventId) {
+                                                 @PathVariable @Positive Long eventId) {
         return commentService.getAllByUserAndEvent(userId, eventId);
     }
 
@@ -60,7 +59,7 @@ public class CommentPrivateController {
     @PatchMapping("/{commentId}")
     public CommentDto update(@PathVariable @Positive Long userId,
                              @PathVariable @Positive Long commentId,
-                             @RequestBody @Valid CommentUpdateDto commentUpdateDto) {
-        return commentService.update(userId, commentId, commentUpdateDto);
+                             @RequestBody @Valid NewCommentDto newCommentDto) {
+        return commentService.update(userId, commentId, newCommentDto);
     }
 }
