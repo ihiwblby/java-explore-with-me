@@ -38,21 +38,18 @@ public class EventPrivateController {
     public List<EventShortDto> getAll(@PathVariable Long userId,
                                       @RequestParam(defaultValue = "0") Integer from,
                                       @RequestParam(defaultValue = "10") Integer size) {
-        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events");
         return eventService.privateGetAllByUserId(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getById(@PathVariable Long userId,
                                 @PathVariable Long eventId) {
-        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events/{eventId} " + eventId);
         return eventService.privateGetByUserIdAndEventId(userId, eventId);
     }
 
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getAllRequest(@PathVariable Long userId,
                                                        @PathVariable Long eventId) {
-        System.out.println("EventPrivateController get /users/{userId} " + userId + " /events/{eventId} " + eventId + " /requests");
         return eventService.privateGetAllParticipationRequests(userId, eventId);
     }
 

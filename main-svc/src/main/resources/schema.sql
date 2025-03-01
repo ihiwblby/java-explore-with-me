@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS users, categories, locations, events, compilations, compilations_to_event, requests CASCADE;
+DROP TABLE IF EXISTS users, categories, locations, events, compilations, compilations_to_event, requests, comments CASCADE;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY UNIQUE,
@@ -60,4 +60,14 @@ CREATE TABLE IF NOT EXISTS compilations_of_events (
     compilation_id BIGINT NOT NULL,
     CONSTRAINT fk_event_compilation_to_event FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE CASCADE,
     CONSTRAINT fk_event_compilation_to_compilation FOREIGN KEY (compilation_id) REFERENCES compilations (id) ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    author_id BIGINT NOT NULL REFERENCES users (id),
+    text VARCHAR(1000) NOT NULL,
+    event_id BIGINT NOT NULL REFERENCES events (id),
+    created TIMESTAMP WITHOUT TIME ZONE,
+    updated TIMESTAMP WITHOUT TIME ZONE,
+    is_hidden BOOLEAN NOT NULL
 );
